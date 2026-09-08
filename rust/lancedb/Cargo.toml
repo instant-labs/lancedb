@@ -75,6 +75,9 @@ reqwest = { version = "0.12.0", default-features = false, features = [
     "macos-system-configuration",
     # Avoid linking OpenSSL into Python wheels, which breaks on FIPS hosts.
     "rustls-tls-native-roots",
+    # The provider-neutral variant, for an application that installs its own
+    # rustls CryptoProvider.
+    "rustls-tls-native-roots-no-provider",
     "stream",
 ], optional = true }
 http = { version = "1", optional = true } # Matching what is in reqwest
@@ -118,6 +121,16 @@ pprof = { version = "0.14", features = ["flamegraph"] }
 
 [features]
 default = []
+# TLS transport for the object store backends. Both features map to a granular
+# opendal transport through lance-io. tls-no-provider keeps aws-lc-rs out of the
+# build, but the application must install a rustls CryptoProvider before it
+# opens the first table, or reqwest panics.
+#
+# They exist in the instant-labs fork of lance 11 only. An application that uses
+# them patches the lance crates to that fork in its own workspace manifest, the
+# way ci/check_forbidden_deps.sh does on the command line.
+tls-aws-lc-rs = ["lance/tls-aws-lc-rs", "lance-io/tls-aws-lc-rs"]
+tls-no-provider = ["lance/tls-no-provider", "lance-io/tls-no-provider"]
 aws = [
     "lance/aws",
     "lance-io/aws",
@@ -138,11 +151,10 @@ goosefs = [
     "lance-io/goosefs",
     "lance-namespace-impls/dir-goosefs",
 ]
-huggingface = [
-    "lance/huggingface",
-    "lance-io/huggingface",
-    "lance-namespace-impls/dir-huggingface",
-]
+# The huggingface backend is removed in this fork. It enables opendal's
+# services-huggingface, which pulls opendal-service-hf -> hf-xet -> xet-client.
+# xet-client enables reqwest/rustls by default, which links aws-lc-rs, and no
+# feature wiring below hf-xet can prevent that.
 dynamodb = ["lance/dynamodb", "aws"]
 remote = [
     "dep:reqwest",

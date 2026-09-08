@@ -31,8 +31,11 @@
 //! - `gcs` - Enable Google Cloud Storage object store support.
 //! - `oss` - Enable Alibaba Cloud OSS object store support.
 //! - `remote` - Enable remote client to connect to LanceDB cloud.
-//! - `huggingface` - Enable HuggingFace Hub integration for loading datasets from the Hub.
 //! - `fp16kernels` - Enable FP16 kernels for faster vector search on CPU.
+//! - `tls-no-provider` - Wire the object store HTTP transport without a crypto
+//!   provider. The application installs a rustls `CryptoProvider` as the process
+//!   default before it opens the first table.
+//! - `tls-aws-lc-rs` - Wire the same transport with the aws-lc-rs provider.
 //! - `metrics` - Publish LanceDB's internal metrics through the
 //!   [`metrics`](https://docs.rs/metrics) crate facade and re-export that crate.
 //!   Install any `metrics`-compatible recorder to collect them.
